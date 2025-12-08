@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "building_name": "TestBuilding-Minimal",
+    "unit": "meters",
+    "format_version": 1
+  },
+  "nodes": [
+    {
+      "id": "entrance",
+      "type": "door",
+      "level": 0,
+      "pos": [0, 0, 0],
+      "attrs": {}
+    },
+    {
+      "id": "corr_1",
+      "type": "corridor",
+      "level": 0,
+      "pos": [3, 0, 0],
+      "attrs": {}
+    },
+    {
+      "id": "door_R1",
+      "type": "door",
+      "level": 0,
+      "pos": [6, 0, 0],
+      "attrs": {}
+    },
+    {
+      "id": "R1",
+      "type": "room",
+      "level": 0,
+      "pos": [8, 0, 0],
+      "attrs": {}
+    }
+  ],
+  "edges": [
+    { "a": "entrance", "b": "corr_1", "weight": 3.0, "attrs": {} },
+    { "a": "corr_1",    "b": "door_R1", "weight": 3.0, "attrs": {} },
+    { "a": "door_R1",   "b": "R1", "weight": 2.0, "attrs": {} }
+  ]
+}
