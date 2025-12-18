@@ -1,0 +1,231 @@
+{
+  "meta": {
+    "building_name": "FH-Engineering-Building-A",
+    "unit": "meters",
+    "format_version": 1
+  },
+  "nodes": [
+    {
+      "id": "entrance_F0",
+      "name": "Main Entrance",
+      "type": "door",
+      "level": 0,
+      "pos": [0, 0, 0],
+      "attrs": { "external": true }
+    },
+    {
+      "id": "corr_F0_1",
+      "name": "F0 Corridor Segment 1",
+      "type": "corridor",
+      "level": 0,
+      "pos": [3, 0, 0],
+      "attrs": {}
+    },
+    {
+      "id": "corr_F0_2",
+      "name": "F0 Corridor Segment 2",
+      "type": "corridor",
+      "level": 0,
+      "pos": [8, 0, 0],
+      "attrs": {}
+    },
+    {
+      "id": "door_R001",
+      "name": "Door R0.01",
+      "type": "door",
+      "level": 0,
+      "pos": [5, 2, 0],
+      "attrs": {}
+    },
+    {
+      "id": "R001",
+      "name": "Lecture Hall R0.01",
+      "type": "room",
+      "level": 0,
+      "pos": [7, 4, 0],
+      "attrs": { "capacity": 80 }
+    },
+    {
+      "id": "door_R002",
+      "name": "Door R0.02",
+      "type": "door",
+      "level": 0,
+      "pos": [10, 2, 0],
+      "attrs": {}
+    },
+    {
+      "id": "R002",
+      "name": "Lecture Hall R0.02",
+      "type": "room",
+      "level": 0,
+      "pos": [12, 4, 0],
+      "attrs": { "capacity": 60 }
+    },
+    {
+      "id": "door_WC_F0",
+      "name": "Door WC F0",
+      "type": "door",
+      "level": 0,
+      "pos": [3, -2, 0],
+      "attrs": {}
+    },
+    {
+      "id": "WC_F0",
+      "name": "Restroom F0",
+      "type": "room",
+      "level": 0,
+      "pos": [3, -4, 0],
+      "attrs": { "gender_neutral": true }
+    },
+    {
+      "id": "stairs_F0",
+      "name": "Main Staircase F0",
+      "type": "stairs",
+      "level": 0,
+      "pos": [8, -3, 0],
+      "attrs": { "floor_transition": true, "stairs": true }
+    },
+    {
+      "id": "stairs_F1",
+      "name": "Main Staircase F1",
+      "type": "stairs",
+      "level": 1,
+      "pos": [8, -3, 3],
+      "attrs": { "floor_transition": true, "stairs": true }
+    },
+    {
+      "id": "elev_door_F0",
+      "name": "Elevator Door F0",
+      "type": "elevator_door",
+      "level": 0,
+      "pos": [6, -3, 0],
+      "attrs": { "accessible": true }
+    },
+    {
+      "id": "elev_door_F1",
+      "name": "Elevator Door F1",
+      "type": "elevator_door",
+      "level": 1,
+      "pos": [6, -3, 3],
+      "attrs": { "accessible": true }
+    },
+    {
+      "id": "elev_cabin_F0",
+      "name": "Elevator Cabin (F0 position)",
+      "type": "elevator_cabin",
+      "level": 0,
+      "pos": [6, -4, 0],
+      "attrs": { "shaft_id": "E1" }
+    },
+    {
+      "id": "elev_cabin_F1",
+      "name": "Elevator Cabin (F1 position)",
+      "type": "elevator_cabin",
+      "level": 1,
+      "pos": [6, -4, 3],
+      "attrs": { "shaft_id": "E1" }
+    },
+    {
+      "id": "corr_F1_1",
+      "name": "F1 Corridor Segment 1",
+      "type": "corridor",
+      "level": 1,
+      "pos": [3, 0, 3],
+      "attrs": {}
+    },
+    {
+      "id": "corr_F1_2",
+      "name": "F1 Corridor Segment 2",
+      "type": "corridor",
+      "level": 1,
+      "pos": [8, 0, 3],
+      "attrs": {}
+    },
+    {
+      "id": "door_R101",
+      "name": "Door R1.01",
+      "type": "door",
+      "level": 1,
+      "pos": [5, 2, 3],
+      "attrs": {}
+    },
+    {
+      "id": "R101",
+      "name": "Seminar Room R1.01",
+      "type": "room",
+      "level": 1,
+      "pos": [7, 4, 3],
+      "attrs": { "capacity": 30 }
+    },
+    {
+      "id": "door_R102",
+      "name": "Door R1.02",
+      "type": "door",
+      "level": 1,
+      "pos": [10, 2, 3],
+      "attrs": {}
+    },
+    {
+      "id": "R102",
+      "name": "Seminar Room R1.02",
+      "type": "room",
+      "level": 1,
+      "pos": [12, 4, 3],
+      "attrs": { "capacity": 25 }
+    },
+    {
+      "id": "door_OFFICE_F1",
+      "name": "Door Office F1",
+      "type": "door",
+      "level": 1,
+      "pos": [3, -2, 3],
+      "attrs": {}
+    },
+    {
+      "id": "OFFICE_F1",
+      "name": "Professor Office F1",
+      "type": "room",
+      "level": 1,
+      "pos": [3, -4, 3],
+      "attrs": { "private": true }
+    }
+  ],
+  "edges": [
+    { "a": "entrance_F0", "b": "corr_F0_1", "weight": 3.0, "attrs": {} },
+    { "a": "corr_F0_1", "b": "corr_F0_2", "weight": 5.0, "attrs": {} },
+ 
+    { "a": "corr_F0_1", "b": "door_WC_F0", "weight": 2.5, "attrs": {} },
+    { "a": "door_WC_F0", "b": "WC_F0", "weight": 2.0, "attrs": {} },
+ 
+    { "a": "corr_F0_1", "b": "door_R001", "weight": 3.0, "attrs": {} },
+    { "a": "door_R001", "b": "R001", "weight": 2.5, "attrs": {} },
+ 
+    { "a": "corr_F0_2", "b": "door_R002", "weight": 2.0, "attrs": {} },
+    { "a": "door_R002", "b": "R002", "weight": 2.5, "attrs": {} },
+ 
+    { "a": "corr_F0_2", "b": "stairs_F0", "weight": 3.0, "attrs": { "stairs_access": true } },
+    { "a": "corr_F0_2", "b": "elev_door_F0", "weight": 2.5, "attrs": { "accessible": true } },
+ 
+    { "a": "stairs_F0", "b": "stairs_F1", "weight": 6.0, "attrs": { "stairs": true, "floor_transition": true } },
+ 
+    { "a": "elev_door_F0", "b": "elev_cabin_F0", "weight": 1.0, "attrs": { "elevator_enter": true } },
+    { "a": "elev_cabin_F0", "b": "elev_cabin_F1", "weight": 5.0, "attrs": { "elevator_move": true, "floor_transition": true } },
+    { "a": "elev_cabin_F1", "b": "elev_door_F1", "weight": 1.0, "attrs": { "elevator_exit": true } },
+ 
+    { "a": "stairs_F1", "b": "corr_F1_2", "weight": 3.0, "attrs": { "stairs_access": true } },
+    { "a": "elev_door_F1", "b": "corr_F1_2", "weight": 2.5, "attrs": { "accessible": true } },
+ 
+    { "a": "corr_F1_1", "b": "corr_F1_2", "weight": 5.0, "attrs": {} },
+ 
+    { "a": "corr_F1_1", "b": "door_OFFICE_F1", "weight": 2.0, "attrs": {} },
+    { "a": "door_OFFICE_F1", "b": "OFFICE_F1", "weight": 2.0, "attrs": {} },
+ 
+    { "a": "corr_F1_1", "b": "door_R101", "weight": 3.0, "attrs": {} },
+    { "a": "door_R101", "b": "R101", "weight": 2.5, "attrs": {} },
+ 
+    { "a": "corr_F1_2", "b": "door_R102", "weight": 2.0, "attrs": {} },
+    { "a": "door_R102", "b": "R102", "weight": 2.5, "attrs": {} },
+ 
+    { "a": "R001", "b": "R002", "weight": 6.0, "attrs": { "internal_connection": true } }
+  ]
+}
