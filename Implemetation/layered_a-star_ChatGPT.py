@@ -1,122 +1,151 @@
 import json
 import time
-import math
 from heapq import heappush, heappop
+from typing import Optional, Tuple, List, Dict
+import itertools
+
+from BuildingGraph import BuildingGraph
+from RoutingModel import RoutingModel
+from custom_dataclasses import Node, Edge, Meta
+
 
 # --------------------------------------------------------
-# Load building JSON
+# Load and parse building JSON
 # --------------------------------------------------------
 
-def load_building(filepath="building.json"):
+def load_building(filepath="building.json") -> Tuple[BuildingGraph, RoutingModel]:
+    """Load building data and return compiled graph with routing model."""
     with open(filepath, "r", encoding="utf8") as f:
         data = json.load(f)
-    return data
+
+    # Parse meta
+    meta = Meta(
+        building_name=data["meta"]["building_name"],
+        unit=data["meta"]["unit"],
+        format_version=data["meta"]["format_version"]
+    )
+
+    # Parse nodes
+    nodes = {}
+    for n in data["nodes"]:
+        nodes[n["id"]] = Node(
+            id=n["id"],
+            type=n["type"],
+            level=n["level"],
+            pos=tuple(n["pos"]) if n.get("pos") else None,
+            attrs=n.get("attrs", {}),
+            name=n.get("name")
+        )
+
+    # Parse edges
+    edges = []
+    for e in data["edges"]:
+        edges.append(Edge(
+            a=e["a"],
+            b=e["b"],
+            weight=e["weight"],
+            attrs=e.get("attrs", {})
+        ))
+
+    # Build and compile graph
+    graph = BuildingGraph(meta, nodes, edges)
+    graph.compile_for_routing()
+
+    # Create routing model
+    model = RoutingModel(
+        graph,
+        floor_transition_penalty=5.0,
+        use_3d_heuristic=True
+    )
+
+    return graph, model
 
 
 # --------------------------------------------------------
-# Build adjacency + node lookup from JSON
+# Layered A* using RoutingModel
 # --------------------------------------------------------
 
-def build_graph(building_data):
-    nodes = {n["id"]: n for n in building_data["nodes"]}
-    graph = {n["id"]: [] for n in building_data["nodes"]}
-
-    for e in building_data["edges"]:
-        a, b, w = e["a"], e["b"], e["weight"]
-        # bidirectional edges:
-        graph[a].append((b, w, e.get("attrs", {})))
-        graph[b].append((a, w, e.get("attrs", {})))
-
-    return graph, nodes
-
-
-# --------------------------------------------------------
-# Heuristic for Layered A*
-# weighted heuristic:
-#   horizontal distance + floor penalty based on levels
-# --------------------------------------------------------
-
-def layered_heuristic(node_a, node_b):
-    (x1, y1, z1) = node_a["pos"]
-    (x2, y2, z2) = node_b["pos"]
-
-    # Simple planar distance
-    planar = math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
-
-    # floor penalty
-    floor_penalty = abs(node_a["level"] - node_b["level"]) * 5.0  
-
-    return planar + floor_penalty
-
-
-# --------------------------------------------------------
-# Layered A*
-# --------------------------------------------------------
-
-def layered_a_star(graph, nodes, start_id, goal_id):
+def layered_a_star(
+        graph: BuildingGraph,
+        model: RoutingModel,
+        start_id: str,
+        goal_id: str
+) -> Tuple[Optional[List[str]], Optional[float], float]:
+    """A* search using RoutingModel for cost and heuristic calculations."""
     start_time = time.time()
 
+    start_idx = graph.idx(start_id)
+    goal_idx = graph.idx(goal_id)
+
     open_set = []
-    heappush(open_set, (0, start_id))
+    heappush(open_set, (0.0, start_idx))
 
     came_from = {}
-    g_score = {n: float("inf") for n in graph}
-    g_score[start_id] = 0
+    g_score = {i: float("inf") for i in range(len(graph.routing_nodes))}
+    g_score[start_idx] = 0.0
 
-    f_score = {n: float("inf") for n in graph}
-    f_score[start_id] = layered_heuristic(nodes[start_id], nodes[goal_id])
+    f_score = {i: float("inf") for i in range(len(graph.routing_nodes))}
+    f_score[start_idx] = model.heuristic(start_idx, goal_idx)
 
     while open_set:
         _, current = heappop(open_set)
 
-        if current == goal_id:
-            # reconstruct path
-            path = [current]
+        if current == goal_idx:
+            # Reconstruct path
+            path_indices = [current]
             while current in came_from:
                 current = came_from[current]
-                path.append(current)
-            path.reverse()
+                path_indices.append(current)
+            path_indices.reverse()
 
+            # Convert to IDs
+            path_ids = [graph.id(idx) for idx in path_indices]
             total_time = time.time() - start_time
-            return path, g_score[goal_id], total_time
+            return path_ids, g_score[goal_idx], total_time
 
-        # explore neighbors
-        for neighbor, cost, attrs in graph[current]:
-            tentative = g_score[current] + cost
-
-            # Optional decision logic:
-            # Example: Give elevator small priority
-            if attrs.get("elevator_move"):
-                tentative -= 1
+        # Explore neighbors using RoutingModel
+        for edge in graph.neighbors(current):
+            neighbor = edge.target
+            tentative = g_score[current] + model.edge_cost(current, edge)
 
             if tentative < g_score[neighbor]:
                 came_from[neighbor] = current
                 g_score[neighbor] = tentative
-                f_score[neighbor] = tentative + layered_heuristic(nodes[neighbor], nodes[goal_id])
+                f_score[neighbor] = tentative + model.heuristic(neighbor, goal_idx)
                 heappush(open_set, (f_score[neighbor], neighbor))
 
     return None, None, time.time() - start_time
 
 
 # --------------------------------------------------------
-# Utilities for formatting and benchmarking
+# Utilities
 # --------------------------------------------------------
 
-def format_path_verbose(path, nodes):
-    return " -> ".join(f"{nid}({nodes[nid].get('name', nid)})" for nid in path)
+def format_path_verbose(path: List[str], graph: BuildingGraph) -> str:
+    """Format path with node names."""
+    result = []
+    for nid in path:
+        node = graph.raw_nodes[nid]
+        name = node.name or nid
+        result.append(f"{nid}({name})")
+    return " -> ".join(result)
 
 
-def benchmark_all_pairs(graph, nodes, max_pairs=None):
-    import itertools
-
-    ids = list(graph.keys())
+def benchmark_all_pairs(
+        graph: BuildingGraph,
+        model: RoutingModel,
+        max_pairs: Optional[int] = None
+) -> Optional[Dict]:
+    """Benchmark pathfinding across all node pairs."""
+    ids = list(graph.raw_nodes.keys())
     pairs = list(itertools.permutations(ids, 2))
+
     if max_pairs:
         pairs = pairs[:max_pairs]
 
     results = []
     for a, b in pairs:
-        path, cost, dt = layered_a_star(graph, nodes, a, b)
+        path, cost, dt = layered_a_star(graph, model, a, b)
         if path:
             results.append({
                 'a': a,
@@ -149,47 +178,46 @@ def benchmark_all_pairs(graph, nodes, max_pairs=None):
         'longest': longest
     }
 
-    # Print concise benchmark summary
+    # Print summary
     print("\n--- Benchmark Summary ---")
     print(f"Pairs evaluated: {stats['count']}")
     print(f"Average cost: {stats['avg_cost']:.3f}")
     print(f"Average hops: {stats['avg_hops']:.2f}")
-    print(f"Average search time: {stats['avg_time']*1000:.3f} ms")
+    print(f"Average search time: {stats['avg_time'] * 1000:.3f} ms")
 
     print("\nShortest path (by cost):")
-    print(f" {shortest['a']} -> {shortest['b']}  cost={shortest['cost']:.3f} time={shortest['time']*1000:.3f} ms")
-    print(format_path_verbose(shortest['path'], nodes))
+    print(f" {shortest['a']} -> {shortest['b']}  cost={shortest['cost']:.3f} time={shortest['time'] * 1000:.3f} ms")
+    print(format_path_verbose(shortest['path'], graph))
 
     print("\nLongest path (by cost):")
-    print(f" {longest['a']} -> {longest['b']}  cost={longest['cost']:.3f} time={longest['time']*1000:.3f} ms")
-    print(format_path_verbose(longest['path'], nodes))
+    print(f" {longest['a']} -> {longest['b']}  cost={longest['cost']:.3f} time={longest['time'] * 1000:.3f} ms")
+    print(format_path_verbose(longest['path'], graph))
 
     return stats
 
 
 # --------------------------------------------------------
-# Main execution example
+# Main execution
 # --------------------------------------------------------
 
 if __name__ == "__main__":
-    building = load_building("building.json")
-    graph, nodes = build_graph(building)
+    graph, model = load_building("building.json")
 
-    # Example: Search path from entrance to Seminar room on F1
+    # Example search
     START = "entrance_F0"
     GOAL = "OFFICE_F1"
 
-    path, cost, dt = layered_a_star(graph, nodes, START, GOAL)
+    path, cost, dt = layered_a_star(graph, model, START, GOAL)
 
     if path:
         print("\nShortest path found:")
         for step in path:
             print(" →", step)
-        print("\nTotal cost:", cost)
+        print(f"\nTotal cost: {cost:.3f}")
     else:
         print("No path found.")
 
-    print(f"\nSearch time: {dt*1000:.2f} ms\n")
+    print(f"Search time: {dt * 1000:.2f} ms\n")
 
-    # Run benchmarks across all pairs (may take longer on large graphs)
-    _ = benchmark_all_pairs(graph, nodes)
+    # Run benchmarks
+    _ = benchmark_all_pairs(graph, model)
