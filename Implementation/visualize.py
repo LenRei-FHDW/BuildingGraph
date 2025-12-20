@@ -1,6 +1,5 @@
 from typing import List, Optional, Set, Tuple
 import matplotlib.pyplot as plt
-from collections import defaultdict
 
 from BuildingGraph import BuildingGraph
 
@@ -65,12 +64,17 @@ def visualize_step(
                 color = "gray"
             elif idx in open_indices:
                 color = "gold"
-            elif node.type in ("stair", "elevator"):
+            elif graph.raw_nodes[graph.id(idx)].type in ("stair", "elevator"):
                 color = "purple"
 
             ax.scatter(node.pos[0], node.pos[1], s=size, c=color, zorder=2)
-            ax.text(node.pos[0], node.pos[1] + 0.15, graph.id(idx),
-                    ha="center", fontsize=7)
+            ax.text(
+                node.pos[0],
+                node.pos[1] + 0.15,
+                graph.id(idx),
+                ha="center",
+                fontsize=7
+            )
 
     plt.suptitle(f"Layered A* – Schritt {step}")
     plt.tight_layout()
