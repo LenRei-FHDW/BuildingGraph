@@ -7,6 +7,7 @@ import itertools
 from BuildingGraph import BuildingGraph
 from RoutingModel import RoutingModel
 from custom_dataclasses import Node, Edge, Meta
+from visualize import visualize_step
 
 
 # --------------------------------------------------------
@@ -69,7 +70,8 @@ def layered_a_star(
         graph: BuildingGraph,
         model: RoutingModel,
         start_id: str,
-        goal_id: str
+        goal_id: str,
+        visualize: bool = False
 ) -> Tuple[Optional[List[str]], Optional[float], float]:
     """A* search using RoutingModel for cost and heuristic calculations."""
     start_time = time.time()
@@ -79,6 +81,9 @@ def layered_a_star(
 
     open_set = []
     heappush(open_set, (0.0, start_idx))
+
+    closed_set = set()
+    step = 0
 
     came_from = {}
     g_score = {i: float("inf") for i in range(len(graph.routing_nodes))}
@@ -113,6 +118,20 @@ def layered_a_star(
                 g_score[neighbor] = tentative
                 f_score[neighbor] = tentative + model.heuristic(neighbor, goal_idx)
                 heappush(open_set, (f_score[neighbor], neighbor))
+
+        if visualize:
+            visualize_step(
+            graph,
+            open_set,
+            closed_set,
+            current,
+            start_idx,
+            goal_idx,
+            step
+        )
+
+        closed_set.add(current)
+        step += 1
 
     return None, None, time.time() - start_time
 
@@ -207,7 +226,7 @@ if __name__ == "__main__":
     START = "entrance_F0"
     GOAL = "OFFICE_F1"
 
-    path, cost, dt = layered_a_star(graph, model, START, GOAL)
+    path, cost, dt = layered_a_star(graph, model, START, GOAL, visualize=True)
 
     if path:
         print("\nShortest path found:")
