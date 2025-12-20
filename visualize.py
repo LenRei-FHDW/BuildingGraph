@@ -78,5 +78,5 @@ def visualize_step(
 
     plt.suptitle(f"Layered A* – Schritt {step}")
     plt.tight_layout()
-    plt.savefig(f"step_{step:03d}.png")
+    plt.savefig(f"{output_dir}/step_{step:03d}.png")
     plt.close()

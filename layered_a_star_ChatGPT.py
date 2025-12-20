@@ -213,30 +213,3 @@ def benchmark_all_pairs(
     print(format_path_verbose(longest['path'], graph))
 
     return stats
-
-
-# --------------------------------------------------------
-# Main execution
-# --------------------------------------------------------
-
-if __name__ == "__main__":
-    graph, model = load_building("building.json")
-
-    # Example search
-    START = "entrance_F0"
-    GOAL = "OFFICE_F1"
-
-    path, cost, dt = layered_a_star(graph, model, START, GOAL, visualize=True)
-
-    if path:
-        print("\nShortest path found:")
-        for step in path:
-            print(" →", step)
-        print(f"\nTotal cost: {cost:.3f}")
-    else:
-        print("No path found.")
-
-    print(f"Search time: {dt * 1000:.2f} ms\n")
-
-    # Run benchmarks
-    _ = benchmark_all_pairs(graph, model)
