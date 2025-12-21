@@ -26,6 +26,7 @@ class Meta:
     building_name: str
     unit: str
     format_version: int
+    group: str
 
 
 @dataclass

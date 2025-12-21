@@ -43,19 +43,38 @@ class RoutingModel:
     # -------- heuristic -------
 
     def heuristic(self, idx: int, goal_idx: int) -> float:
-        """Layered heuristic."""
+        """
+        Optimierte Layered-Heuristik.
+        Kombiniert 3D-Tightness mit logischen Transitions-Kosten.
+        """
         a = self.g.routing_nodes[idx]
         b = self.g.routing_nodes[goal_idx]
 
-        # 3D or 2D distance
-        if a.pos and b.pos:
-            if self.use_3d_heuristic:
-                d = math.dist(a.pos, b.pos)
-            else:
-                d = math.hypot(a.pos[0] - b.pos[0], a.pos[1] - b.pos[1])
-        else:
-            d = 0.0
+        # 1. Physikalische Basis (3D-Distanz)
+        # Sie ist die absolut kleinste Distanz im Raum und immer zulässig.
+        h_dist = math.dist(a.pos, b.pos)
 
-        # layer penalty
         level_diff = abs(a.level - b.level)
-        return d + level_diff * self.min_floor_transition_cost
+        if level_diff == 0:
+            return h_dist
+
+        # 2. Einpreisung der logischen Zusatzkosten (Penalties)
+        # Da jede Kante zwischen Etagen die 'floor_transition_penalty' kostet,
+        # muss dieser Wert zwingend in die Heuristik einfließen.
+        logical_penalty = self.floor_transition_penalty
+
+        # 3. Einpreisung der nicht-euklidischen Fixkosten (Wartezeit/Antritt)
+        # Treppen und Aufzüge im Generator haben Fixkosten (ca. 5.0 - 6.0).
+        # Indem wir einen konservativen Fixwert addieren, 'weiß' der A*,
+        # dass ein Wechsel niemals 'umsonst' ist.
+        fixed_entry_cost = 5.0
+
+        # Aggressive, aber zulässige Schranke:
+        # Wir addieren die Kosten pro Etagen-Differenz.
+        return h_dist + (level_diff * (logical_penalty + fixed_entry_cost))
+
+    def heuristic_3d_only(self, idx: int, goal_idx: int) -> float:
+        """Reine 3D-Luftlinie ohne Layer-Logik für die Baseline."""
+        a = self.g.routing_nodes[idx]
+        b = self.g.routing_nodes[goal_idx]
+        return math.dist(a.pos, b.pos) if (a.pos and b.pos) else 0.0
