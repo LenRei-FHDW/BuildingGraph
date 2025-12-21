@@ -1,42 +1,164 @@
 {
-  "meta": {
-    "building_name": "TestBuilding-Minimal",
-    "unit": "meters",
-    "format_version": 1
-  },
-  "nodes": [
-    {
-      "id": "entrance",
-      "type": "door",
-      "level": 0,
-      "pos": [0, 0, 0],
-      "attrs": {}
-    },
-    {
-      "id": "corr_1",
-      "type": "corridor",
-      "level": 0,
-      "pos": [3, 0, 0],
-      "attrs": {}
-    },
-    {
-      "id": "door_R1",
-      "type": "door",
-      "level": 0,
-      "pos": [6, 0, 0],
-      "attrs": {}
-    },
-    {
-      "id": "R1",
-      "type": "room",
-      "level": 0,
-      "pos": [8, 0, 0],
-      "attrs": {}
-    }
-  ],
-  "edges": [
-    { "a": "entrance", "b": "corr_1", "weight": 3.0, "attrs": {} },
-    { "a": "corr_1",    "b": "door_R1", "weight": 3.0, "attrs": {} },
-    { "a": "door_R1",   "b": "R1", "weight": 2.0, "attrs": {} }
-  ]
+	"meta": {
+		"building_name": "TestBuilding-3Levels-Richer",
+		"group": "visualization",
+		"unit": "meters",
+		"format_version": 1
+	},
+
+	"nodes": [
+		{
+			"id": "entrance_L0",
+			"type": "door",
+			"level": 0,
+			"pos": [0, 0, 0],
+			"attrs": {}
+		},
+		{
+			"id": "corr_L0_A",
+			"type": "corridor",
+			"level": 0,
+			"pos": [4, 0, 0],
+			"attrs": {}
+		},
+		{
+			"id": "corr_L0_B",
+			"type": "corridor",
+			"level": 0,
+			"pos": [8, 0, 0],
+			"attrs": {}
+		},
+		{
+			"id": "stairs_L0",
+			"type": "stairs",
+			"level": 0,
+			"pos": [12, 0, 0],
+			"attrs": {}
+		},
+		{
+			"id": "room_L0_1",
+			"type": "room",
+			"level": 0,
+			"pos": [4, -3, 0],
+			"attrs": {}
+		},
+		{
+			"id": "room_L0_2",
+			"type": "room",
+			"level": 0,
+			"pos": [8, 3, 0],
+			"attrs": {}
+		},
+
+		{
+			"id": "stairs_L1",
+			"type": "stairs",
+			"level": 1,
+			"pos": [12, 0, 3],
+			"attrs": {}
+		},
+		{
+			"id": "corr_L1_A",
+			"type": "corridor",
+			"level": 1,
+			"pos": [8, 0, 3],
+			"attrs": {}
+		},
+		{
+			"id": "corr_L1_B",
+			"type": "corridor",
+			"level": 1,
+			"pos": [4, 0, 3],
+			"attrs": {}
+		},
+		{
+			"id": "room_L1_1",
+			"type": "room",
+			"level": 1,
+			"pos": [4, -3, 3],
+			"attrs": {}
+		},
+		{
+			"id": "room_L1_2",
+			"type": "room",
+			"level": 1,
+			"pos": [8, 3, 3],
+			"attrs": {}
+		},
+		{
+			"id": "room_L1_3",
+			"type": "room",
+			"level": 1,
+			"pos": [0, 0, 3],
+			"attrs": {}
+		},
+
+		{
+			"id": "stairs_L2",
+			"type": "stairs",
+			"level": 2,
+			"pos": [12, 0, 6],
+			"attrs": {}
+		},
+		{
+			"id": "corr_L2_A",
+			"type": "corridor",
+			"level": 2,
+			"pos": [8, 0, 6],
+			"attrs": {}
+		},
+		{
+			"id": "corr_L2_B",
+			"type": "corridor",
+			"level": 2,
+			"pos": [4, 0, 6],
+			"attrs": {}
+		},
+		{
+			"id": "room_L2_1",
+			"type": "room",
+			"level": 2,
+			"pos": [4, -3, 6],
+			"attrs": {}
+		},
+		{
+			"id": "room_L2_2",
+			"type": "room",
+			"level": 2,
+			"pos": [8, 3, 6],
+			"attrs": {}
+		}
+	],
+
+	"edges": [
+		{ "a": "entrance_L0", "b": "corr_L0_A", "weight": 4.0, "attrs": {} },
+		{ "a": "corr_L0_A", "b": "corr_L0_B", "weight": 4.0, "attrs": {} },
+		{ "a": "corr_L0_B", "b": "stairs_L0", "weight": 4.0, "attrs": {} },
+		{ "a": "corr_L0_A", "b": "room_L0_1", "weight": 3.0, "attrs": {} },
+		{ "a": "corr_L0_B", "b": "room_L0_2", "weight": 3.0, "attrs": {} },
+
+		{ "a": "stairs_L1", "b": "corr_L1_A", "weight": 4.0, "attrs": {} },
+		{ "a": "corr_L1_A", "b": "corr_L1_B", "weight": 4.0, "attrs": {} },
+		{ "a": "corr_L1_B", "b": "room_L1_1", "weight": 3.0, "attrs": {} },
+		{ "a": "corr_L1_A", "b": "room_L1_2", "weight": 3.0, "attrs": {} },
+		{ "a": "corr_L1_B", "b": "room_L1_3", "weight": 4.0, "attrs": {} },
+
+		{ "a": "stairs_L2", "b": "corr_L2_A", "weight": 4.0, "attrs": {} },
+		{ "a": "corr_L2_A", "b": "corr_L2_B", "weight": 4.0, "attrs": {} },
+		{ "a": "corr_L2_B", "b": "room_L2_1", "weight": 3.0, "attrs": {} },
+		{ "a": "corr_L2_A", "b": "room_L2_2", "weight": 3.0, "attrs": {} },
+
+		{
+			"a": "stairs_L0",
+			"b": "stairs_L1",
+			"weight": 3.5,
+			"attrs": { "vertical": true }
+		},
+		{
+			"a": "stairs_L1",
+			"b": "stairs_L2",
+			"weight": 3.5,
+			"attrs": { "vertical": true }
+		}
+	]
 }
