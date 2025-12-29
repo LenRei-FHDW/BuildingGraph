@@ -22,6 +22,7 @@ def load_building(filepath="building.json") -> Tuple[BuildingGraph, RoutingModel
     # Parse meta
     meta = Meta(
         building_name=data["meta"]["building_name"],
+        group=data["meta"]["group"],
         unit=data["meta"]["unit"],
         format_version=data["meta"]["format_version"]
     )
