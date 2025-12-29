@@ -38,6 +38,7 @@ def run_efficiency_benchmark(raw_data):
     plt.ylabel("Gebäudeklasse")
     plt.grid(axis='x', linestyle='--', alpha=0.6)
     plt.tight_layout()
+    plt.savefig("efficiency_clean.png", dpi=300)
     plt.show()
 
 

@@ -2,7 +2,8 @@
   "meta": {
     "building_name": "FH-Engineering-Building-A",
     "unit": "meters",
-    "format_version": 1
+    "format_version": 1,
+    "group": 1
   },
   "nodes": [
     {
